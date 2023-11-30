@@ -5,23 +5,26 @@ using UnityEngine;
 public class PlayerCtrl : MonoBehaviour
 {
     Rigidbody rigid;
-    public Camera cam;
-    public Transform rotateObj;
+    [SerializeField] Transform head;
+    [SerializeField] Transform body;
     [SerializeField] float moveSpd = 10;
     [SerializeField] float sensitivity;
-    float rotX;
-    GameObject awrjvdn;
+    public float rotX;
 
     void Start()
     {
-        cam = GetComponentInChildren<Camera>();
-        rigid = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
+        rigid = GetComponent<Rigidbody>();
+    }
+    void Update()
+    {
+        Camera.main.transform.position = head.position;
+        Camera.main.transform.rotation = head.rotation;
     }
     void LateUpdate()
     {
         Move();
-        CameraRotationX();
+        RotationX();
         RotationY();
     }
     void Move()
@@ -31,12 +34,11 @@ public class PlayerCtrl : MonoBehaviour
         Vector3 veloc = (hor + ver).normalized * moveSpd;
         rigid.MovePosition(transform.position + veloc * Time.deltaTime);
     }
-    void CameraRotationX()
+    void RotationX()
     {
         rotX -= Input.GetAxisRaw("Mouse Y") * sensitivity;
         rotX = Mathf.Clamp(rotX, -90, 90);
-        //cam.transform.localEulerAngles = Vector3.right * rotX;
-        rotateObj.localEulerAngles = Vector3.right* rotX;
+        body.localEulerAngles = Vector3.right* rotX;
     }
     void RotationY()
     {
