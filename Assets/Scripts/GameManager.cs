@@ -17,4 +17,14 @@ public class GameManager : MonoBehaviour
     }
     private static GameManager instancee;
 
+    public enum State
+    {
+        Default, Menu, GameOver
+    }
+    public State state;
+
+    void Update()
+    {
+        
+    }
 }
