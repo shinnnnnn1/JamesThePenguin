@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            if(instance == null)
+            if(instancee == null)
             {
                 instancee = FindObjectOfType<GameManager>();
             }
