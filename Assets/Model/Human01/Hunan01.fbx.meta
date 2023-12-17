@@ -91,7 +91,7 @@ ModelImporter:
   - 12206aa6af548b64d99296bbf8b07894
   - 91818aa0d399ce14881ce76b9bbc77b0
   - b1c24b5a29e9305429379925c7ad8fca
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human:

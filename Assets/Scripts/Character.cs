@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class Character : MonoBehaviour, IDamageable
 {
-    public float startHp = 100;
-    public float hp;
-
+    public float hp = 100;
     public bool dead;
 
     public virtual void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)

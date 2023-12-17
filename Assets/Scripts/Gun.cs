@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
+using DG.Tweening;
 
 public class Gun : MonoBehaviour
 {
@@ -9,30 +10,38 @@ public class Gun : MonoBehaviour
     {
         Ready, Empty, Reload
     }
-    public GunState state;
+    GunState state;
 
-    public Transform firePos;
-    PlayerAnimation anim;
-    PlayerCtrl player;
+    [SerializeField] Animator anim;
+    [SerializeField] Transform head;
+    [SerializeField] Transform recoil;
+    [SerializeField] Transform recoilY;
+    [SerializeField] Transform fireFront;
+    Transform firePos;
 
-    public int oneMagazine = 30;
-    public int currentFullAmmo;
-    public int currentAmmo;
+    AudioSource audioPlayer;
+    [SerializeField] AudioClip fire;
+    [SerializeField] AudioClip reload;
 
-    public float fireDelay;
-    public float fireDamage;
+    [SerializeField] ParticleSystem fireEff;
+    [SerializeField] ParticleSystem hitEff;
+    LineRenderer line;
 
+    int oneMagazine = 30;
+    int currentFullAmmo;
+    int currentAmmo;
+    int fireDamage = 40;
+    float fireDelay = 0.1f;
     float lastFire;
-
-    public int layer = 1 << 6;
 
     void Start()
     {
-        anim = GetComponent<PlayerAnimation>();
-        player = GetComponent<PlayerCtrl>();
+        state = GunState.Ready;
         currentFullAmmo = oneMagazine * 3;
         currentAmmo = oneMagazine;
-        state = GunState.Ready;
+        firePos = Camera.main.transform;
+        audioPlayer = GetComponent<AudioSource>();
+        line = GetComponent<LineRenderer>();
     }
     void Update()
     {
@@ -43,7 +52,9 @@ public class Gun : MonoBehaviour
         Fire();
         DrawR();
         Reload();
+        Origin();
     }
+
     void Fire()
     {
         if (Input.GetButton("Fire") && state == GunState.Ready && Time.time >= lastFire + fireDelay)
@@ -52,22 +63,34 @@ public class Gun : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(firePos.position, firePos.forward, out hit, Mathf.Infinity))
             {
-                Debug.Log(hit.point);
                 IDamageable target = hit.collider.GetComponent<IDamageable>();
                 if (target != null)
                 {
                     target.OnDamage(fireDamage, hit.point, hit.normal);
                 }
             }
-            anim.Trig("Fire");
+            Instantiate(hitEff.gameObject, hit.point, head.localRotation * Quaternion.Euler(0, 180, 0));
+            Recoil();
+            anim.SetTrigger("Fire");
+            audioPlayer.PlayOneShot(fire);
+            fireEff.Play();
+            StopCoroutine(Line(hit.point));
+            StartCoroutine(Line(hit.point));
             currentAmmo--;
             if (currentAmmo <= 0)
             {
                 state = GunState.Empty;
             }
             UIManager.instance.Ammo(currentAmmo, currentFullAmmo);
-            player.Recoil();
         }
+    }
+    IEnumerator Line(Vector3 hitPoint)
+    {
+        line.enabled = true;
+        line.SetPosition(0, fireFront.position);
+        line.SetPosition(1, hitPoint);
+        yield return new WaitForSeconds(0.01f);
+        line.enabled = false;
     }
     void DrawR()
     {
@@ -84,7 +107,8 @@ public class Gun : MonoBehaviour
             currentAmmo != oneMagazine && currentFullAmmo > 0)
         {
             StartCoroutine(Reloding());
-            anim.Trig("Reload");
+            anim.SetTrigger("Reload");
+            audioPlayer.PlayOneShot(reload);
         }
     }
     IEnumerator Reloding()
@@ -103,7 +127,19 @@ public class Gun : MonoBehaviour
             currentAmmo = oneMagazine;
         }
         UIManager.instance.Ammo(currentAmmo, currentFullAmmo);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         state = GunState.Ready;
+    }
+
+    void Origin()
+    {
+        recoil.DOLocalRotate(Vector3.zero, 2f);
+        recoilY.DOLocalRotate(Vector3.zero, 2f);
+    }
+    void Recoil()
+    {
+        float rec = Random.Range(-1, 1);
+        recoil.DOPunchRotation(new Vector3(-3 * 3, 0, 0), 0.5f);
+        recoilY.DOPunchRotation(new Vector3(0, rec * 10, 0), 0.5f);
     }
 }
