@@ -63,9 +63,11 @@ public class Gun : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(firePos.position, firePos.forward, out hit, Mathf.Infinity))
             {
+                print(hit.collider.name);
                 IDamageable target = hit.collider.GetComponent<IDamageable>();
                 if (target != null)
                 {
+                    Debug.Log("hit");
                     target.OnDamage(fireDamage, hit.point, hit.normal);
                 }
             }
