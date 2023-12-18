@@ -138,6 +138,7 @@ public class Gun : MonoBehaviour
         recoil.DOLocalRotate(Vector3.zero, 2f);
         recoilY.DOLocalRotate(Vector3.zero, 2f);
     }
+
     void Recoil()
     {
         float rec = Random.Range(-1, 1);
