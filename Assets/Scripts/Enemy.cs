@@ -4,18 +4,29 @@ using UnityEngine;
 
 public class Enemy : Character
 {
-    private void Start()
+    public  Rigidbody rigid;
+
+    void Start()
     {
         gameObject.Ragdoll(false);
     }
 
-    private void Update()
+    void Update()
     {
+        if(Input.GetKeyDown(KeyCode.U))
+        {
+            print("up");
+            rigid.AddForce(Vector3.up * 10000);
+        }
+    }
 
-        if(Input.GetKeyDown(KeyCode.Return))
+    public override void OnDamage(float damage)
+    {
+        base.OnDamage(damage);
+        if(dead)
         {
             gameObject.Ragdoll(true);
+            rigid.AddForce(Vector3.up * 10000);
         }
-
     }
 }

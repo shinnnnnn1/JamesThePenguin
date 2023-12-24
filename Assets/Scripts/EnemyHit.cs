@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class EnemyHit : MonoBehaviour, IDamageable
 {
+    public bool head;
 
-    public virtual void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
+    public void OnDamage(float damage)
     {
-        
+        Enemy enemy = GetComponentInParent<Enemy>();
+        int oneTap = head ? 3 : 1;
+        enemy.OnDamage(damage * oneTap);
     }
 }

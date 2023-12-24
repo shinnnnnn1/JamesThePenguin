@@ -16,7 +16,7 @@ public static class Extentions
             //collider.enabled = isOn;
         }
         _animator.enabled = !isOn;
-        _rigidbody.isKinematic = isOn;
+        _rigidbody.isKinematic = !isOn;
         //_collider.enabled = !isOn;
     }
 }
