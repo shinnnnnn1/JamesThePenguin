@@ -8,16 +8,20 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rigid;
     [SerializeField] Transform head;
     [SerializeField] float moveSpd;
+
+    Transform center;
     float savedSpd;
 
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
+        center = Camera.main.transform;
         savedSpd = moveSpd;
     }
     void Update()
     {
         RunAndCrouch();
+        Action();
     }
     void FixedUpdate()
     {
@@ -47,6 +51,19 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpd = savedSpd;
             head.DOLocalMoveY(2.64f, 0.3f);
+        }
+    }
+
+    void Action()
+    {
+        RaycastHit hit;
+        if (Input.GetButtonDown("Action") && Physics.Raycast(center.position, center.forward, out hit, 4))
+        {
+            IAction target = hit.collider.GetComponent<IAction>();
+            if(target != null)
+            {
+                target.OnAction();
+            }
         }
     }
 }

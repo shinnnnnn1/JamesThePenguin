@@ -99,8 +99,9 @@ public class Gun : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, Mathf.Infinity))
         {
-            Debug.DrawRay(firePos.position, firePos.forward * hit.distance, Color.green);
+            //Debug.DrawRay(firePos.position, firePos.forward * hit.distance, Color.green);
         }
+        Debug.DrawRay(firePos.position, firePos.forward * 4, Color.green);
     }
 
     void Reload()
