@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : Character
 {
     public  Rigidbody rigid;
+    bool action;
 
     void Start()
     {
@@ -23,10 +24,11 @@ public class Enemy : Character
     public override void OnDamage(float damage)
     {
         base.OnDamage(damage);
-        if(dead)
+        if(dead && !action)
         {
             gameObject.Ragdoll(true);
-            rigid.AddForce(Vector3.up * 10000);
+            rigid.AddForce(-transform.forward * 10000);
+            action = true;
         }
     }
 }
