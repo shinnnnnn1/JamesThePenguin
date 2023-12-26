@@ -10,9 +10,5 @@ public class Character : MonoBehaviour, IDamageable
     public virtual void OnDamage(float damage)
     {
         hp -= damage;
-        if(hp <= 0 && !dead)
-        {
-            dead = true;
-        }
     }
 }
