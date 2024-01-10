@@ -17,6 +17,7 @@ public class MouseCtrl : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameManager.instance.dead) return;
         RotateY();
         RotateX();
     }

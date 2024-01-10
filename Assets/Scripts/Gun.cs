@@ -45,10 +45,7 @@ public class Gun : MonoBehaviour
     }
     void Update()
     {
-        if(GameManager.instance.state != GameManager.State.Default)
-        {
-            return;
-        }
+        if (GameManager.instance.dead) return;
         Fire();
         DrawR();
         Reload();

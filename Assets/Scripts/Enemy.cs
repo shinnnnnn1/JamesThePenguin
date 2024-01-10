@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    IDamageable target;
+
     Transform one;
-    public Rigidbody rigid;
-    public Animator anim;
+    [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public Animator anim;
 
     [SerializeField] int enemyType;
 
-    [SerializeField] float distance;
+    float distance = 20;
     float detectAngle = 180;
-
     int layer = 1 << 7;
-    [SerializeField] LayerMask laaa;
-    //int myLayer = 1 << 0 | 1 << 7;
+    int lay = ~ ( 1 << 6 );
+
+    bool detected;
+    bool fired;
+
+    [SerializeField] ParticleSystem fireP;
+    AudioSource audioS;
 
     void Start()
     {
@@ -24,12 +30,22 @@ public class Enemy : Character
         rigid = one.GetChild(1).GetComponent<Rigidbody>();
         anim = transform.GetChild(0).GetComponent<Animator>();
         anim.SetInteger("Enemy Type", enemyType);
+        audioS = gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
     {
         if (dead) return;
         Detecting();
+        if(detected)
+        {
+            Attack();
+        }
+        else
+        {
+            anim.SetBool("Detect", false);
+            StopAllCoroutines();
+        }
     }
 
     void Detecting()
@@ -38,35 +54,62 @@ public class Enemy : Character
         if(coll.Length > 0 )
         {
             Vector3 vec = (coll[0].transform.position - transform.position).normalized;
-            //Debug.Log(coll[0].transform.name);
             float angle = Vector3.Angle(vec, transform.forward);
             if(angle < detectAngle * 0.5f)
             {
-                Debug.Log("In");
-                if (Physics.Raycast(transform.position + Vector3.up, vec + Vector3.up, Mathf.Infinity, laaa))
+                if (Physics.Raycast(transform.position, vec, out RaycastHit hit, distance, lay))
                 {
-                    Debug.DrawRay(transform.position + Vector3.up, (vec * distance) + Vector3.up, Color.red);
+                    Debug.DrawRay(transform.position, vec * hit.distance, Color.red);
                     //Debug.Log(hit.transform.name);
+                    if (hit.collider.tag == "Player")
+                    {
+                        target = hit.collider.GetComponent<IDamageable>();
+                        detected = true;
+                    }
+                    else
+                    {
+                        detected = false;
+                        fired = false;
+                    }
                 }
                 else
                 {
-                    Debug.DrawRay(transform.position + Vector3.up, (vec * distance) + Vector3.up, Color.green);
+                    detected = false;
+                    fired = false;
                 }
             }
         }
     }
+    void Attack()
+    {
+        anim.SetBool("Detect", true);
+        if(!fired)
+        {
+            StartCoroutine(Fire());
+        }
+    }
+    IEnumerator Fire()
+    {
+        fired = true;
+        yield return new WaitForSeconds(2f);
+        anim.SetTrigger("Fire");
+        target.OnDamage(25);
+        audioS.Play();
+        fireP.Play();
+        fired = false;
+    }
 
     public override void OnDamage(float damage)
     {
-        distance *= 2;
         base.OnDamage(damage);
         if (hp <= 0 && !dead)
         {
+            StopAllCoroutines();
             gameObject.Ragdoll(true);
             rigid.AddForce(-transform.forward * 10000);
             dead = true;
+            GameManager.instance.currentPoint += 100;
         }
+        distance *= 2;
     }
 }
-// Physics.Raycast(Vector3 origin, Vector3 direction, float distance)
-// Debug.DrawRay(Vector3 origin, Vector3 direction * float distance)

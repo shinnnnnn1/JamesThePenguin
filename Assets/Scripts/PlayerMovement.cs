@@ -20,11 +20,13 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
+        if(GameManager.instance.dead) return;
         RunAndCrouch();
         Action();
     }
     void FixedUpdate()
     {
+        if (GameManager.instance.dead) return;
         Move();
     }
 
@@ -40,17 +42,17 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButton("Crouch"))
         {
             moveSpd = savedSpd * 0.5f;
-            head.DOLocalMoveY(1.64f, 0.3f);
+            head.DOLocalMoveY(0.64f, 0.3f);
         }
         else if(Input.GetButton("Run"))
         {
             moveSpd = savedSpd * 1.5f;
-            head.DOLocalMoveY(2.64f, 0.3f);
+            head.DOLocalMoveY(1.64f, 0.3f);
         }
         else
         {
             moveSpd = savedSpd;
-            head.DOLocalMoveY(2.64f, 0.3f);
+            head.DOLocalMoveY(1.64f, 0.3f);
         }
     }
 

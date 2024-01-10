@@ -30,8 +30,4 @@ public class EnemyAI : MonoBehaviour
             }
         }
     }
-    private void Update()
-    {
-
-    }
 }
