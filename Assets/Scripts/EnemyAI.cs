@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     Enemy enemy;
-    NavMeshAgent nav;
+    [HideInInspector] public NavMeshAgent nav;
 
     [SerializeField] Transform[] points;
     [SerializeField] float repeatTime;

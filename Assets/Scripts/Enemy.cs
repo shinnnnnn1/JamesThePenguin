@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class Enemy : Character
 {
     IDamageable target;
+    RaycastHit hit;
+    EnemyAI ai;
 
     Transform one;
     [HideInInspector] public Rigidbody rigid;
@@ -31,6 +34,7 @@ public class Enemy : Character
         anim = transform.GetChild(0).GetComponent<Animator>();
         anim.SetInteger("Enemy Type", enemyType);
         audioS = gameObject.GetComponent<AudioSource>();
+        ai = gameObject.GetComponent<EnemyAI>();
     }
 
     void Update()
@@ -40,11 +44,19 @@ public class Enemy : Character
         if(detected)
         {
             Attack();
+            if(ai != null)
+            {
+                ai.nav.Stop();
+            }
         }
         else
         {
             anim.SetBool("Detect", false);
             StopAllCoroutines();
+            if (ai != null)
+            {
+                ai.nav.Resume();
+            }
         }
     }
 
@@ -57,12 +69,13 @@ public class Enemy : Character
             float angle = Vector3.Angle(vec, transform.forward);
             if(angle < detectAngle * 0.5f)
             {
-                if (Physics.Raycast(transform.position, vec, out RaycastHit hit, distance, lay))
+                if (Physics.Raycast(transform.position, vec, out hit, distance, lay))
                 {
                     Debug.DrawRay(transform.position, vec * hit.distance, Color.red);
                     //Debug.Log(hit.transform.name);
                     if (hit.collider.tag == "Player")
                     {
+                        
                         target = hit.collider.GetComponent<IDamageable>();
                         detected = true;
                     }
@@ -82,6 +95,7 @@ public class Enemy : Character
     }
     void Attack()
     {
+        transform.LookAt(hit.transform);
         anim.SetBool("Detect", true);
         if(!fired)
         {
