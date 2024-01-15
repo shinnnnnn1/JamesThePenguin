@@ -46,7 +46,7 @@ public class Enemy : Character
             Attack();
             if(ai != null)
             {
-                ai.nav.Stop();
+                ai.nav.isStopped = true;
             }
         }
         else
@@ -55,7 +55,7 @@ public class Enemy : Character
             StopAllCoroutines();
             if (ai != null)
             {
-                ai.nav.Resume();
+                ai.nav.isStopped = false;
             }
         }
     }

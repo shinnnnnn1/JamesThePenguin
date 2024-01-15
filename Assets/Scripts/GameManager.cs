@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour
 
     public string currnetScene;
 
+    void Start()
+    {
+
+    }
+
     void Update()
     {
         
@@ -62,6 +67,6 @@ public class GameManager : MonoBehaviour
 
     public void BackToMenu()
     {
-        SceneManager.LoadScene("Start");
+        SceneManager.LoadScene("Title");
     }
 }
